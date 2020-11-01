@@ -6,11 +6,14 @@ const fileRouter = require("./routes/file.routes");
 const app = express();
 const PORT = config.get("serverPort");
 const corsMiddleware = require("./middleware/cors.middleware");
+const fileUpload = require("express-fileupload")
 
+app.use(fileUpload({}));
 app.use(corsMiddleware);
 app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/files", fileRouter);
+
 
 const start = async () => {
     try {

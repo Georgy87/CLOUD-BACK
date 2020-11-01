@@ -36,7 +36,6 @@ router.post('/registration',
     }
 })
 
-
 router.post('/login',
     async (req, res) => {
         try {

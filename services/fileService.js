@@ -8,14 +8,14 @@ class FileService {
     createDir(file) {
         // const filePath = `${config.get('filePath')}/${file.user}/${file.path}`
         const filePath = path.join(__dirname, `../files/${file.user}/${file.path}`)
-        console.log(filePath)
-        fs.mkdir(filePath, (e) => {
-            console.log(e)
-        })
+
         return new Promise(((resolve, reject) => {
             try {
                 if (!fs.existsSync(filePath)) {
-                    fs.mkdirSync(filePath)
+                    console.log(filePath)
+                    fs.mkdir(filePath, (e) => {
+                        console.log(e);
+                    })
                     return resolve({message: 'File was created'})
                 } else {
                     return reject({message: "File already exist"})
@@ -27,5 +27,4 @@ class FileService {
     }
 
 }
-// ывдажыдваыжвдлаыв?
 module.exports = new FileService()
