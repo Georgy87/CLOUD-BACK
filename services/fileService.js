@@ -12,7 +12,7 @@ class FileService {
         return new Promise(((resolve, reject) => {
             try {
                 if (!fs.existsSync(filePath)) {
-                    console.log(filePath)
+                   
                     fs.mkdir(filePath, (e) => {
                         console.log(e);
                     })

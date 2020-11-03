@@ -11,7 +11,6 @@ class FileController {
 
             const file = new File({ name, type, parent, user: req.user.id });
             const parentFile = await File.findOne({ _id: parent });
-            console.log(parentFile);
 
             if (!parentFile) {
                 file.path = name;
@@ -44,7 +43,7 @@ class FileController {
     }
 
     async uploadFile(req, res) {
-        console.log(req)
+
         try {
             const file = req.files.file;
             const parent = await File.findOne({
@@ -67,7 +66,6 @@ class FileController {
             } else {
                 Path = path.join(__dirname, `../files/${user._id}/${file.name}`);
             }
-            console.log(parent);
 
             if (fs.existsSync(Path)) {
                 return res.status(400).json({message: 'File already exist'});
@@ -76,14 +74,18 @@ class FileController {
             file.mv(Path);
 
             const type = file.name.split('.').pop();
-
+            let filePath = file.name;
+            if(parent) {
+                filePath = parent.path + '/' + file.name
+            }
+            console.log(filePath);
             const dbFile = new File({
                 name: file.name,
                 type,
                 size: file.size,
-                path: parent.path,
-                parent: parent._id,
-                user: user._id
+                path: filePath,
+                parent: parent ? parent._id : null,
+                user: user._id,
             })
 
             await dbFile.save();
@@ -94,6 +96,25 @@ class FileController {
         } catch (e) {
             console.log(e);
             return res.status(500).json({ message: "Upload error" });
+        }
+    }
+
+    async downloadFile(req, res) {
+        console.log(req);
+        console.log('hello')
+
+        try {
+
+            const file = await File.findOne({_id: req.query.id, user: req.user.id});
+            console.log(file);
+            const Path = path.join(__dirname, `../files/${req.user.id}/${file.name}`);
+            console.log(Path)
+            if (fs.existsSync(Path)) {
+                return res.download(Path, file.name);
+            }
+            return res.status(400).json({message: "Download error"});
+        } catch (error) {
+            res.status(500).json({message: "Download error"});
         }
     }
 }
