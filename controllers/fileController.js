@@ -100,21 +100,31 @@ class FileController {
     }
 
     async downloadFile(req, res) {
-        console.log(req);
-        console.log('hello')
-
         try {
-
             const file = await File.findOne({_id: req.query.id, user: req.user.id});
-            console.log(file);
             const Path = path.join(__dirname, `../files/${req.user.id}/${file.name}`);
-            console.log(Path)
+
             if (fs.existsSync(Path)) {
                 return res.download(Path, file.name);
             }
             return res.status(400).json({message: "Download error"});
         } catch (error) {
             res.status(500).json({message: "Download error"});
+        }
+    }
+
+    async deleteFile(req, res) {
+        try {
+            const file = await File.findOne({_id: req.query.id, user: req.user.id});
+            if (!file) {
+                return res.status(400).json({message: 'file not found'});
+            }
+            fileService.deleteFile(file);
+            await file.remove();
+            return res.json({message: 'File was deleted'});
+        } catch (error) {
+            console.log(error);
+            return res.status(400).json({message: 'Dir is not empty'});
         }
     }
 }

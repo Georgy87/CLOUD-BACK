@@ -8,11 +8,12 @@ class FileService {
     createDir(file) {
         // const filePath = `${config.get('filePath')}/${file.user}/${file.path}`
         const filePath = path.join(__dirname, `../files/${file.user}/${file.path}`)
+        console.log(file)
 
         return new Promise(((resolve, reject) => {
             try {
                 if (!fs.existsSync(filePath)) {
-                   
+
                     fs.mkdir(filePath, (e) => {
                         console.log(e);
                     })
@@ -24,6 +25,17 @@ class FileService {
                 return reject({message: 'File error'})
             }
         }))
+    }
+    deleteFile(file) {
+        const path = this.getPath(file);
+        if (file.type === 'dir') {
+            fs.rmdirSync(path);
+        } else {
+            fs.unlinkSync(path);
+        }
+    }
+    getPath(file) {
+        return path.join(__dirname, `../files/${file.user}/${file.path}`)
     }
 
 }
